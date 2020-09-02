@@ -3,6 +3,7 @@ keyboard_layout_setting_br () {
   echo "Setting keyboard layout to br-abnt2"
   loadkeys br-abnt2
   setxkbmap -model abnt2 -layout br
+  setxkbmap br
 }
 
 set_locale () {
