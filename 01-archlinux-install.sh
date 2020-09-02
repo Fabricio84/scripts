@@ -1,13 +1,4 @@
 #!bin/bash
-is_connected () {
-   if [ "`ping -c 1 www.google.com.br`" ]
-    then
-      return 0
-    else
-      return 1
-   fi
-}
-
 set_locale () {
   echo "Setting locale to pt_BR.UTF-8"
   sed -i 's/#pt_BR.UTF-8 UTF-8/pt_BR.UTF-8 UTF-8/g' /etc/locale.gen
@@ -59,13 +50,17 @@ mount_partitions () {
   mount /dev/sda1 /mnt/boot
 }
 
-linux_install () {
-  echo "Install essentials packages"
-  pacman -Syy
+reflector_install () {
   pacman -S reflector --noconfirm
   cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
   reflector -c "BR" -f 12 -l 10 -n 12 --save /etc/pacman.d/mirrorlist
-  pacstrap /mnt base linux linux-firmware
+}
+
+linux_install () {
+  echo "Install essentials packages"
+  pacman -Syy
+  reflector_install
+  pacstrap /mnt base linux linux-firmware networkManager
 }
 
 fstab_generate () {
@@ -75,18 +70,8 @@ fstab_generate () {
 
 arch_chroot () {
   echo "Changing root"
-  cp 02-archlinux-install.sh /mnt
-  arch-chroot /mnt bash 02-archlinux-install.sh $root_password $username $password
-}
-
-wifi_connect () {
-  echo "Setting network wifi"
-  pacman -S networkmanager
-  printf "Typing your SSID: "
-  read -r ssid
-  printf "Typing your password: "
-  read -r passw
-  nmcli device wifi connect $ssid password $passw
+  cp 02-archlinux-install.sh /mnt/home
+  arch-chroot /mnt bash  /mnt/home/02-archlinux-install.sh $root_password $username $password
 }
 
 read_credentials () {

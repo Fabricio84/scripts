@@ -87,12 +87,16 @@ term_alacritty_install_settings () {
 
 displaymanager_gdm_install () {
   pacman -S gdm --noconfirm
+  systemctl enable gdm.service
 }
 
 networkmanager_install () {
     pacman -S networkmanager --noconfirm
-    systemctl enable networkManager.service
-    systemctl restart networkManager.service
+}
+
+networkManager_configure () {
+  systemctl enable networkManager.service
+  systemctl restart networkManager.service
 }
 
 install_apps () {
@@ -135,14 +139,42 @@ create_ssh_key () {
   echo -e "$passphrase" | (ssh-add ~/.ssh/id_ed25519)
 }
 
+wifi_connect () {
+  echo "Setting network wifi"
+  pacman -S networkmanager
+  printf "Typing your SSID: "
+  read -r ssid
+  printf "Typing your password: "
+  read -r passw
+  nmcli device wifi connect $ssid password $passw
+}
+
+check_network_configure () {
+  if [ "`ping -c 1 www.google.com.br`" ]
+    then
+      return 0
+    else
+      networkManager_configure
+      wifi_connect
+   fi
+}
+
+reflector_install () {
+  pacman -S reflector --noconfirm
+  cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
+  reflector -c "BR" -f 12 -l 10 -n 12 --save /etc/pacman.d/mirrorlist
+}
+
 main () {
+  check_network_configure
+  reflector_install
   set_timezone
   set_locale
   set_hosts
   keyboard_layout_setting_br
   mkinitcpio_set_hooks_keymap
   systemd_boot_uefi_intel_ucode
-  networkmanager_install
+  # networkmanager_install
   desktopenviroment_bugdie_install
   displaymanager_gdm_install
   term_alacritty_install_settings
