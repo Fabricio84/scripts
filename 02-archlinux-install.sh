@@ -108,6 +108,8 @@ install_app_google_chrome () {
   git clone https://aur.archlinux.org/google-chrome.git
   cd google-chrome
   makepkg -s
+  packagename=$(ls | grep pkg.tar)
+  pacman -U $packagename --noconfirm
   cd ~
 }
 
@@ -173,10 +175,15 @@ reflector_install () {
   reflector -c "BR" -f 12 -l 10 -n 12 --save /etc/pacman.d/mirrorlist
 }
 
+install_driver_touchpad () {
+  pacman -S xf86-input-libinput xorg-xinput --noconfirm
+}
+
 create_autostart_profile_settings () {
   username=$1
 
   echo "setxkbmap br" >> /home/$username/.profile_settings.sh
+  echo "xinput 'ELAN1200:00 04F3:303E Touchpad' set-prop 'libinput Tapping Enabled' 1" >> /home/$username/.profile_settings.sh
   chmod +x /home/$username/.profile_settings.sh
 
   mkdir .config/autostart
@@ -202,6 +209,7 @@ main () {
   displaymanager_gdm_install
   term_alacritty_install_settings
   sudo_install_user_add $1 $2 $3
+  install_driver_touchpad
   create_autostart_profile_settings $2
 }
 
