@@ -99,7 +99,16 @@ networkManager_configure () {
 }
 
 install_apps () {
-  pacman -S pantheon-files firefox 
+  pacman -S pantheon-files firefox libreoffice-still --noconfirm
+  install_app_google_chrome
+}
+
+install_app_google_chrome () {
+  cd /tmp
+  git clone https://aur.archlinux.org/google-chrome.git
+  cd google-chrome
+  makepkg -s
+  cd ~
 }
 
 install_apps_dev () {
