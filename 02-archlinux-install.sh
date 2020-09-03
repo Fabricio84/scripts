@@ -3,7 +3,6 @@ keyboard_layout_setting_br () {
   echo "Setting keyboard layout to br-abnt2"
   loadkeys br-abnt2
   setxkbmap -model abnt2 -layout br
-  setxkbmap br
 }
 
 set_locale () {
@@ -165,6 +164,21 @@ reflector_install () {
   reflector -c "BR" -f 12 -l 10 -n 12 --save /etc/pacman.d/mirrorlist
 }
 
+create_autostart_profile_settings () {
+  username=$1
+
+  echo "setxkbmap br" >> /home/$username/.profile_settings.sh
+  chmod +x /home/$username/.profile_settings.sh
+
+  mkdir .config/autostart
+  echo "[Desktop Entry]" >> /home/$username/.config/autostart/profile_settings.desktop
+  echo "Type=Application" >> /home/$username/.config/autostart/profile_settings.desktop 
+  echo "Exec=/home/$username/.profile_settings.sh" >> /home/$username/.config/autostart/profile_settings.desktop 
+  echo "Hidden=false" >> /home/$username/.config/autostart/profile_settings.desktop 
+  echo "Terminal=false" >> /home/$username/.config/autostart/profile_settings.desktop 
+  echo "Name=Profile-Settings" >> /home/$username/.config/autostart/profile_settings.desktop
+}
+
 main () {
   check_network_configure
   reflector_install
@@ -179,6 +193,7 @@ main () {
   displaymanager_gdm_install
   term_alacritty_install_settings
   sudo_install_user_add $1 $2 $3
+  create_autostart_profile_settings $2
 }
 
 main $1 $2 $3
