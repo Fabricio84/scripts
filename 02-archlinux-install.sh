@@ -114,7 +114,7 @@ install_app_google_chrome () {
 }
 
 install_apps_dev () {
-  pacman -S code vim tmux nano alacritty git curl docker --noconfirm
+  pacman -S code vim tmux nano alacritty git curl docker yarn --noconfirm
 
   #git configure
   git config --global user.name "Fabricio Souza"
