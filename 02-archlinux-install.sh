@@ -139,6 +139,19 @@ install_apps_dev () {
   asdf global nodejs 12.18.2
   # inside folder can i?
   #asdf local nodejs [other version]
+
+  install_apps_dev_snap
+
+  sudo snap install insomnia
+}
+
+install_apps_dev_snap () {
+  cd /tmp
+  git clone https://aur.archlinux.org/snapd.git
+  cd snapd
+  makepkg -si --noconfirm
+  sudo systemctl enable --now snapd.socket
+  sudo ln -s /var/lib/snapd/snap /snap
 }
 
 create_ssh_key () {
