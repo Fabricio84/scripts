@@ -60,7 +60,7 @@ linux_install () {
   echo "Install essentials packages"
   pacman -Syy
   reflector_install
-  pacstrap /mnt base linux linux-firmware networkManager
+  pacstrap /mnt base base-devel linux linux-firmware networkManager
 }
 
 fstab_generate () {
