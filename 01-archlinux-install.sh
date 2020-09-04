@@ -66,12 +66,16 @@ linux_install () {
 fstab_generate () {
   echo "Fstab generate..."
   genfstab -U /mnt >> /mnt/etc/fstab
+
+  #editando o fstab para iniciar a partição /home
+  echo "# /dev/sda4" >> /mnt/etc/fstab
+  echo "# /dev/sda4UUID=$(blkid /dev/sda4 -s UUID -o value)   /home   ext4    noatime   0 2" >> /mnt/etc/fstab
 }
 
 arch_chroot () {
   echo "Changing root"
-  cp 02-archlinux-install.sh /mnt/home
-  arch-chroot /mnt bash  /mnt/home/02-archlinux-install.sh $root_password $username $password
+  cp 02-archlinux-install.sh /mnt/tmp
+  arch-chroot /mnt bash  /mnt/tmp/02-archlinux-install.sh $root_password $username $password
 }
 
 read_credentials () {
@@ -89,7 +93,7 @@ main () {
   # MAIN
   echo "ArchLinux 64 installing..."
 
-  read_credentials
+  # read_credentials
 
   set_locale
   set_datetime
@@ -100,7 +104,9 @@ main () {
   linux_install
   fstab_generate
   arch_chroot
-  reboot now
+
+  echo "Reboot system..."
+  reboot
 }
 
 main
