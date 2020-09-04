@@ -93,7 +93,7 @@ main () {
   # MAIN
   echo "ArchLinux 64 installing..."
 
-  # read_credentials
+  read_credentials
 
   set_locale
   set_datetime
@@ -106,7 +106,6 @@ main () {
   arch_chroot
 
   echo "Reboot system..."
-  reboot
 }
 
 main
