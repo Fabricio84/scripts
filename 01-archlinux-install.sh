@@ -60,7 +60,7 @@ linux_install () {
   echo "Install essentials packages"
   pacman -Syy
   reflector_install
-  pacstrap /mnt base base-devel linux linux-firmware networkManager
+  pacstrap /mnt base base-devel linux linux-firmware networkmanager --noconfirm
 }
 
 fstab_generate () {
@@ -75,7 +75,7 @@ fstab_generate () {
 arch_chroot () {
   echo "Changing root"
   cp 02-archlinux-install.sh /mnt/tmp
-  arch-chroot /mnt bash  /mnt/tmp/02-archlinux-install.sh $root_password $username $password
+  arch-chroot /mnt bash  tmp/02-archlinux-install.sh $root_password $username $password
 }
 
 read_credentials () {
