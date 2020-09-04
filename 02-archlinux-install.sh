@@ -199,7 +199,7 @@ create_autostart_profile_settings () {
   echo "xinput 'ELAN1200:00 04F3:303E Touchpad' set-prop 'libinput Tapping Enabled' 1" >> /home/$username/.profile_settings.sh
   chmod +x /home/$username/.profile_settings.sh
 
-  mkdir .config/autostart
+  mkdir -p .config/autostart
   echo "[Desktop Entry]" >> /home/$username/.config/autostart/profile_settings.desktop
   echo "Type=Application" >> /home/$username/.config/autostart/profile_settings.desktop 
   echo "Exec=/home/$username/.profile_settings.sh" >> /home/$username/.config/autostart/profile_settings.desktop 
