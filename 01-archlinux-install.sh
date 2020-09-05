@@ -75,7 +75,8 @@ fstab_generate () {
 arch_chroot () {
   echo "Changing root"
   cp 02-archlinux-install.sh /mnt/etc
-  arch-chroot /mnt bash  etc/02-archlinux-install.sh $root_password $username $password
+  arch-chroot /mnt
+  #arch-chroot /mnt bash  etc/02-archlinux-install.sh $root_password $username $password
 }
 
 read_credentials () {
@@ -105,7 +106,7 @@ main () {
   fstab_generate
   arch_chroot
 
-  echo "Reboot system..."
+  echo "run script 02-archlinux-install.sh"
 }
 
 main
