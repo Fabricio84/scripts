@@ -71,7 +71,7 @@ fstab_generate () {
 
   #editando o fstab para iniciar a partição /home
   echo "# /dev/sda4" >> /mnt/etc/fstab
-  echo "# /dev/sda4UUID=$(blkid /dev/sda4 -s UUID -o value)   /home   ext4    noatime   0 2" >> /mnt/etc/fstab
+  echo "UUID=$(blkid /dev/sda4 -s UUID -o value)   /home   ext4    noatime   0 2" >> /mnt/etc/fstab
 }
 
 arch_chroot () {
