@@ -86,8 +86,7 @@ displaymanager_gdm_install () {
 }
 
 networkManager_configure () {
-  systemctl enable networkManager.service
-  systemctl restart networkManager.service
+  systemctl enable NetworkManager.service
 }
 
 install_apps () {
@@ -217,7 +216,6 @@ main () {
   install_apps_dev
   install_apps
   networkManager_configure
-  wifi_connect
   reboot
 }
 
