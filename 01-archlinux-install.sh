@@ -16,6 +16,7 @@ set_datetime () {
 
 create_partition_efi () {
   echo "Setting disk partition"
+  wipefs -a /dev/sda
 
   echo -e "\tcreating EFI partition"
   sudo parted -s /dev/sda mklabel gpt mkpart ESP fat32 1MiB 261MiB set 1 esp on
@@ -77,6 +78,7 @@ fstab_generate () {
 arch_chroot () {
   echo "Changing root"
   cp 02-archlinux-install.sh /mnt/etc
+  echo "run script 02-archlinux-install.sh to continue installing..."
   arch-chroot /mnt
   #arch-chroot /mnt bash  etc/02-archlinux-install.sh $root_password $username $password
 }
@@ -107,8 +109,6 @@ main () {
   linux_install
   fstab_generate
   arch_chroot
-
-  echo "run script 02-archlinux-install.sh"
 }
 
 main

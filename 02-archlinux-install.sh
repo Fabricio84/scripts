@@ -80,17 +80,9 @@ desktopenviroment_bugdie_install () {
   sudo pacman -S budgie-desktop budgie-extras --noconfirm
 }
 
-term_alacritty_install_settings () {
-  pacman -S alacritty --noconfirm
-}
-
 displaymanager_gdm_install () {
   pacman -S gdm --noconfirm
   systemctl enable gdm.service
-}
-
-networkmanager_install () {
-    pacman -S networkmanager --noconfirm
 }
 
 networkManager_configure () {
@@ -164,7 +156,6 @@ create_ssh_key () {
 
 wifi_connect () {
   echo "Setting network wifi"
-  pacman -S networkmanager
   printf "Typing your SSID: "
   read -r ssid
   printf "Typing your password: "
@@ -196,7 +187,7 @@ create_autostart_profile_settings () {
   username=$1
 
   echo "setxkbmap br" >> /home/$username/.profile_settings.sh
-  echo "xinput 'ELAN1200:00 04F3:303E Touchpad' set-prop 'libinput Tapping Enabled' 1" >> /home/$username/.profile_settings.sh
+  echo "xinput set-prop 'ELAN1200:00 04F3:303E Touchpad' 'libinput Tapping Enabled' 1" >> /home/$username/.profile_settings.sh
   chmod +x /home/$username/.profile_settings.sh
 
   mkdir -p /home/$username/.config/autostart
@@ -217,13 +208,17 @@ main () {
   keyboard_layout_setting_br
   mkinitcpio_set_hooks_keymap
   systemd_boot_uefi_intel_ucode
-  # networkmanager_install
   desktopenviroment_bugdie_install
   displaymanager_gdm_install
   term_alacritty_install_settings
   sudo_install_user_add $1 $2 $3
   install_driver_touchpad
   create_autostart_profile_settings $2
+  install_apps_dev
+  install_apps
+  networkManager_configure
+  wifi_connect
+  reboot
 }
 
 main $1 $2 $3
