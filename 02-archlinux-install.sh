@@ -224,7 +224,7 @@ main () {
   displaymanager_gdm_install
   term_alacritty_install_settings
   sudo_install_user_add $1 $2 $3
-  install_driver_touchpad
+  install_driver_touchpad $root_password $username $password
   #create_autostart_profile_settings $2
   #install_apps_dev
   #install_apps
@@ -232,5 +232,5 @@ main () {
   reboot
 }
 
-main $1 $2 $3
+main
 
