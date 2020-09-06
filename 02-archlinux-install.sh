@@ -1,8 +1,7 @@
 #bin/bash
 keyboard_layout_setting_br () {
   echo "Setting keyboard layout to br-abnt2"
-  loadkeys br-abnt2
-  setxkbmap -model abnt2 -layout br
+  localectl set-x11-keymap br pc104 abnt2
 }
 
 set_locale () {
@@ -77,7 +76,8 @@ systemd_boot_uefi_intel_ucode () {
 
 desktopenviroment_bugdie_install () {
   sudo pacman -S xorg-server xterm xorg-xinit xf86-video-intel --noconfirm
-  sudo pacman -S budgie-desktop budgie-extras --noconfirm
+  sudo pacman -S gnome gnome-extras --noconfirm
+  #sudo pacman -S budgie-desktop budgie-extras --noconfirm
 }
 
 displaymanager_gdm_install () {
@@ -198,7 +198,20 @@ create_autostart_profile_settings () {
   echo "Name=Profile-Settings" >> /home/$username/.config/autostart/profile_settings.desktop
 }
 
+read_credentials () {
+  printf "Digite o nome para usuário: "
+  read username
+
+  printf "Digite a senha para $username: "
+  read password
+
+  printf "Digite a senha para o root: "
+  read root_password
+}
+
 main () {
+  read_credentials
+
   check_network_configure
   reflector_install
   set_timezone
@@ -212,9 +225,9 @@ main () {
   term_alacritty_install_settings
   sudo_install_user_add $1 $2 $3
   install_driver_touchpad
-  create_autostart_profile_settings $2
-  install_apps_dev
-  install_apps
+  #create_autostart_profile_settings $2
+  #install_apps_dev
+  #install_apps
   networkManager_configure
   reboot
 }

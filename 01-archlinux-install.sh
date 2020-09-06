@@ -83,22 +83,11 @@ arch_chroot () {
   #arch-chroot /mnt bash  etc/02-archlinux-install.sh $root_password $username $password
 }
 
-read_credentials () {
-  printf "Digite o nome para usuário: "
-  read username
 
-  printf "Digite a senha para $username: "
-  read password
-
-  printf "Digite a senha para o root: "
-  read root_password
-}
 
 main () {
   # MAIN
   echo "ArchLinux 64 installing..."
-
-  read_credentials
 
   set_locale
   set_datetime
