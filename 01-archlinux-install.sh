@@ -77,7 +77,7 @@ fstab_generate () {
 
 arch_chroot () {
   echo "Changing root"
-  cp scripts /mnt/etc
+  cp -r ~/scripts /mnt/etc
   echo "run script /etc/scripts/02-archlinux-install.sh to continue installing..."
   arch-chroot /mnt
 }

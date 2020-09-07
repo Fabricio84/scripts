@@ -75,9 +75,7 @@ systemd_boot_uefi_intel_ucode () {
 }
 
 desktopenviroment_install () {
-  sudo pacman -S xorg-server xorg-xinit xf86-video-intel --noconfirm
-  sudo pacman -S gnome gnome-control-center gnome-system-monitor --noconfirm
-  #sudo pacman -S budgie-desktop budgie-extras --noconfirm
+  sudo pacman -S xf86-video-intel gnome --noconfirm
 }
 
 configure_displaymanager () {
@@ -86,6 +84,7 @@ configure_displaymanager () {
 
 networkManager_configure () {
   systemctl enable NetworkManager.service
+  systemctl start NetworkManager.service
   nmcli device wifi connect $ssid password $passw
 }
 
@@ -150,6 +149,23 @@ read_credentials () {
   read -r passw
 }
 
+package_manager_install () {
+  cd /tmp
+  # install asdf
+  # to update asdf with (asdf update)
+  git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.7.8
+  echo -e "\n. $HOME/.asdf/asdf.sh" >> ~/.bashrc
+  echo -e "\n. $HOME/.asdf/completions/asdf.bash" >> ~/.bashrc
+
+  asdf update
+
+  git clone https://aur.archlinux.org/snapd.git
+  cd snapd
+  makepkg -si --noconfirm
+  sudo systemctl enable --now snapd.socket
+  sudo ln -s /var/lib/snapd/snap /snap
+}
+
 main () {
   read_credentials
 
@@ -163,8 +179,9 @@ main () {
   set_timezone
   set_locale
   set_hosts
-  keyboard_layout_setting_br
+  #keyboard_layout_setting_br
   networkManager_configure
+  package_manager_install
   reboot
 }
 
