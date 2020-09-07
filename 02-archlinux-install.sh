@@ -74,83 +74,19 @@ systemd_boot_uefi_intel_ucode () {
   echo "options root=PARTUUID=$rootPARTUUID rw" >> /boot/loader/entries/arch.conf
 }
 
-desktopenviroment_bugdie_install () {
-  sudo pacman -S xorg-server xterm xorg-xinit xf86-video-intel --noconfirm
-  sudo pacman -S gnome gnome-extras --noconfirm
+desktopenviroment_install () {
+  sudo pacman -S xorg-server xorg-xinit xf86-video-intel --noconfirm
+  sudo pacman -S gnome gnome-control-center gnome-system-monitor --noconfirm
   #sudo pacman -S budgie-desktop budgie-extras --noconfirm
 }
 
-displaymanager_gdm_install () {
-  pacman -S gdm --noconfirm
+configure_displaymanager () {
   systemctl enable gdm.service
 }
 
 networkManager_configure () {
   systemctl enable NetworkManager.service
-}
-
-install_apps () {
-  pacman -S pantheon-files firefox libreoffice-still --noconfirm
-  install_app_google_chrome
-}
-
-install_app_google_chrome () {
-  cd /tmp
-  git clone https://aur.archlinux.org/google-chrome.git
-  cd google-chrome
-  makepkg -s
-  packagename=$(ls | grep pkg.tar)
-  pacman -U $packagename --noconfirm
-  cd ~
-}
-
-install_apps_dev () {
-  pacman -S code vim tmux nano alacritty git curl docker yarn --noconfirm
-
-  #git configure
-  git config --global user.name "Fabricio Souza"
-  git config --global user.email "fabricio.abner@gmail.com"
-
-  #docker configure
-  sudo usermod -aG docker $USER
-
-  # install asdf
-  # to update asdf with (asdf update)
-  git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.7.8
-  echo -e "\n. $HOME/.asdf/asdf.sh" >> ~/.bashrc
-  echo -e "\n. $HOME/.asdf/completions/asdf.bash" >> ~/.bashrc
-
-  # install asdf-nodejs
-  # to update plugins with (asdf plugin-update --all)
-  asdf plugin-add nodejs https://github.com/asdf-vm/asdf-nodejs.git
-  bash -c '${ASDF_DATA_DIR:=$HOME/.asdf}/plugins/nodejs/bin/import-release-team-keyring'
-
-  # install nodejs 12.18.2 by asdf
-  asdf install nodejs 12.18.2
-  asdf global nodejs 12.18.2
-  # inside folder can i?
-  #asdf local nodejs [other version]
-
-  install_apps_dev_snap
-
-  sudo snap install insomnia
-}
-
-install_apps_dev_snap () {
-  cd /tmp
-  git clone https://aur.archlinux.org/snapd.git
-  cd snapd
-  makepkg -si --noconfirm
-  sudo systemctl enable --now snapd.socket
-  sudo ln -s /var/lib/snapd/snap /snap
-}
-
-create_ssh_key () {
-  echo "SSH-KEY generate..."
-  echo -e "$passphrase\n$passphrase" | (ssh-keygen -o -a 100 -t ed25519 -f ~/.ssh/id_ed25519 -C $key_comment)
-
-  echo -e "\t add SSH-KEY to ssh-agent"
-  echo -e "$passphrase" | (ssh-add ~/.ssh/id_ed25519)
+  nmcli device wifi connect $ssid password $passw
 }
 
 wifi_connect () {
@@ -207,6 +143,11 @@ read_credentials () {
 
   printf "Digite a senha para o root: "
   read root_password
+
+  printf "Rede Wifi SSID: "
+  read -r ssid
+  printf "Senha Wifi: "
+  read -r passw
 }
 
 main () {
@@ -214,23 +155,17 @@ main () {
 
   check_network_configure
   reflector_install
+  mkinitcpio_set_hooks_keymap
+  systemd_boot_uefi_intel_ucode
+  desktopenviroment_install
+  configure_displaymanager
+  sudo_install_user_add $root_password $username $password
   set_timezone
   set_locale
   set_hosts
   keyboard_layout_setting_br
-  mkinitcpio_set_hooks_keymap
-  systemd_boot_uefi_intel_ucode
-  desktopenviroment_bugdie_install
-  displaymanager_gdm_install
-  term_alacritty_install_settings
-  sudo_install_user_add $1 $2 $3
-  install_driver_touchpad $root_password $username $password
-  #create_autostart_profile_settings $2
-  #install_apps_dev
-  #install_apps
   networkManager_configure
   reboot
 }
 
 main
-

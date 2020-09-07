@@ -77,13 +77,10 @@ fstab_generate () {
 
 arch_chroot () {
   echo "Changing root"
-  cp 02-archlinux-install.sh /mnt/etc
-  echo "run script 02-archlinux-install.sh to continue installing..."
+  cp scripts /mnt/etc
+  echo "run script /etc/scripts/02-archlinux-install.sh to continue installing..."
   arch-chroot /mnt
-  #arch-chroot /mnt bash  etc/02-archlinux-install.sh $root_password $username $password
 }
-
-
 
 main () {
   # MAIN
