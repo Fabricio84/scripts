@@ -1,39 +1,4 @@
 #bin/bash
-keyboard_layout_setting_br () {
-  echo "Setting keyboard layout to br-abnt2"
-  localectl set-x11-keymap br pc104 abnt2
-}
-
-set_locale () {
-  echo "Setting locale to pt_BR.UTF-8"
-  sed -i 's/#pt_BR.UTF-8 UTF-8/pt_BR.UTF-8 UTF-8/g' /etc/locale.gen
-  locale-gen
-  export LANG=pt_BR.UTF-8  
-
-  echo "LANG=pt_BR.UTF-8" >> /etc/locale.conf
-  echo "KEYMAP=br-abnt2" >> /etc/vconsole.conf
-}
-
-set_datetime () {
-  echo "Setting date time"
-  timedatectl set-ntp true
-}
-
-set_timezone () {
-  echo "Setting timezone to America/Sao_Paulo"
-  ln -sf /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
-  hwclock --systohc
-}
-
-set_hosts () {
-  echo "Setting hosts"
-  echo "archlinux" > /etc/hostname
-
-  echo "127.0.0.1	localhost.localdomain	localhost" >> /etc/hosts
-  echo "::1		localhost.localdomain	localhost" >> /etc/hosts
-  echo "127.0.1.1	archlinux.localdomain	archlinux" >> /etc/hosts
-}
-
 mkinitcpio_set_hooks_keymap () {
   echo "Setting mkinitcpio.conf add HOOK keymap"
   sed -i 's/fsck)/fsck keymap)/g' /etc/mkinitcpio.conf
@@ -72,20 +37,6 @@ systemd_boot_uefi_intel_ucode () {
   echo "initrd /intel-ucode.img" >> /boot/loader/entries/arch.conf
   echo "initrd /initramfs-linux.img" >> /boot/loader/entries/arch.conf
   echo "options root=PARTUUID=$rootPARTUUID rw" >> /boot/loader/entries/arch.conf
-}
-
-desktopenviroment_install () {
-  sudo pacman -S xf86-video-intel gnome --noconfirm
-}
-
-configure_displaymanager () {
-  systemctl enable gdm.service
-}
-
-networkManager_configure () {
-  systemctl enable NetworkManager.service
-  systemctl start NetworkManager.service
-  nmcli device wifi connect $ssid password $passw
 }
 
 wifi_connect () {
@@ -133,56 +84,13 @@ create_autostart_profile_settings () {
   echo "Name=Profile-Settings" >> /home/$username/.config/autostart/profile_settings.desktop
 }
 
-read_credentials () {
-  printf "Digite o nome para usuário: "
-  read username
-
-  printf "Digite a senha para $username: "
-  read password
-
-  printf "Digite a senha para o root: "
-  read root_password
-
-  printf "Rede Wifi SSID: "
-  read -r ssid
-  printf "Senha Wifi: "
-  read -r passw
-}
-
-package_manager_install () {
-  cd /tmp
-  # install asdf
-  # to update asdf with (asdf update)
-  git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.7.8
-  echo -e "\n. $HOME/.asdf/asdf.sh" >> ~/.bashrc
-  echo -e "\n. $HOME/.asdf/completions/asdf.bash" >> ~/.bashrc
-
-  asdf update
-
-  git clone https://aur.archlinux.org/snapd.git
-  cd snapd
-  makepkg -si --noconfirm
-  sudo systemctl enable --now snapd.socket
-  sudo ln -s /var/lib/snapd/snap /snap
-}
-
 main () {
-  read_credentials
+  #reflector_install
+  #mkinitcpio_set_hooks_keymap
+  #systemd_boot_uefi_intel_ucode
+  #sudo_install_user_add $root_password $username $password
 
-  check_network_configure
-  reflector_install
-  mkinitcpio_set_hooks_keymap
-  systemd_boot_uefi_intel_ucode
-  desktopenviroment_install
-  configure_displaymanager
-  sudo_install_user_add $root_password $username $password
-  set_timezone
-  set_locale
-  set_hosts
-  #keyboard_layout_setting_br
-  networkManager_configure
-  package_manager_install
-  reboot
+  #exit 0
 }
 
 main

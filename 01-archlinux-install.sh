@@ -95,6 +95,7 @@ main () {
   linux_install
   fstab_generate
   arch_chroot
+  reboot
 }
 
 main
