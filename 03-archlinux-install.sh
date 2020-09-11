@@ -21,7 +21,8 @@ install_app_google_chrome () {
 }
 
 install_apps_dev () {
-  sudo pacman -S code vim tmux nano alacritty git curl docker --noconfirm
+  sudo pacman -S code vim tmux nano alacritty git --noconfirm
+  install_apps_dev_docker
 
   #git configure
   git config --global user.name "Fabricio Souza"
@@ -48,6 +49,17 @@ install_apps_dev () {
   install_apps_dev_snap
 
   sudo snap install insomnia
+}
+
+install_apps_dev_docker () {
+  sudo pacman -S docker --noconfirm
+  sudo systemctl enable docker.socket
+}
+
+install_apps_dev_docker_compose () {
+  sudo pacman -S curl libffi openssl gcc glibc make --noconfirm
+  sudo curl -L "https://github.com/docker/compose/releases/download/1.27.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+  sudo chmod +x /usr/local/bin/docker-compose
 }
 
 remove_apps_defaults_unnecessary () {
